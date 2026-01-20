@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['arco-design-nuxt-module', 'nuxt-auth-sanctum'],
+  modules: ['arco-design-nuxt-module', 'nuxt-auth-sanctum', '@pinia/nuxt',],
   ssr: false,
   arco: {
     importPrefix: 'A',
@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   sanctum: {
-    baseUrl: 'http://127.0.0.1:8000', // Laravel API
+    baseUrl: 'http://localhost:8000', // Laravel API
     mode: 'cookie',
     redirectIfAuthenticated: false,
     redirectIfUnauthenticated: false,

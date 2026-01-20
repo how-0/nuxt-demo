@@ -1,16 +1,16 @@
 <template>
-  <a-form ref="formRef" :rules="rules" :model="form" :style="{width:'600px'}" @submit="handleRegisterFormSubmit">
-    <a-form-item field="name" label="Username" validate-trigger="blur">
-      <a-input v-model="form.name" placeholder="please enter your username..." />
+  <a-form ref="formRef" :model="form" :style="{width:'600px'}"  @submit="handleRegisterFormSubmit" layout="horizontal" :label-col-props="{ span: 6, offset: 0 }" :wrapper-col-props="{ span: 18, offset: 0 }">
+    <a-form-item field="name" label="Username">
+      <a-input v-model="form.name" placeholder="please enter your username..." validate-trigger="blur"/>
     </a-form-item>
     <a-form-item field="email" label="email">
-      <a-input v-model="form.email" placeholder="please enter your email..." />
+      <a-input v-model="form.email" placeholder="please enter your email..." validate-trigger="blur"/>
     </a-form-item>
-    <a-form-item field="password" label="密码" validate-trigger="blur">
-      <a-input-password v-model="form.password" placeholder="please enter your password..." />
+    <a-form-item field="password" label="password">
+      <a-input-password v-model="form.password" placeholder="please enter your password..." validate-trigger="blur"/>
     </a-form-item>
-    <a-form-item field="password_confirmation" label="Confirm Password" validate-trigger="blur">
-      <a-input-password v-model="form.password_confirmation" placeholder="please confirm your password..." />
+    <a-form-item field="password_confirmation" label="confirm password">
+      <a-input-password v-model="form.password_confirmation" placeholder="please confirm your password..." validate-trigger="blur"/>
     </a-form-item>
     <a-form-item>
       <a-space>
@@ -23,11 +23,10 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { Message } from '@arco-design/web-vue'
-import { useSanctumClient } from '#imports'
+import { useSanctumFetch } from '#imports'
 
-const formRef = ref(null)
-const client = useSanctumClient()
+const formRef = ref();
+const errors = ref({});
 const form = reactive({
   name: '',
   email: '',
@@ -36,6 +35,7 @@ const form = reactive({
 })
 
 async function handleRegisterFormSubmit (){
+  errors.value = {};
   try{
     const { data, error } = await useSanctumFetch('/api/register', {
       method: 'POST',
@@ -48,6 +48,42 @@ async function handleRegisterFormSubmit (){
     })
 
     if (error.value) {
+      if (error.value.statusCode === 422){
+        errors.value = error.value.data.errors;
+        console.log("Full Object error for registering", errors.value);
+        if (errors.value.name){
+          formRef.value.setFields({
+            name: {
+              status:'error',
+              message: errors.value.name[0],
+            },
+          });
+        }
+        if (errors.value.email){
+          formRef.value.setFields({
+            email: {
+              status: 'error',
+              message: errors.value.email[0],
+            },
+          });
+        }
+        if (errors.value.password){
+          formRef.value.setFields({
+            password: {
+              status: 'error',
+              message: errors.value.password[0],
+            },
+          });
+        }
+        if (errors.value.password_confirmation){
+          formRef.value.setFields({
+            password_confirmation: {
+              status: 'error',
+              message: errors.value.password_confirmation[0],
+            },
+          });
+        }
+      }
       throw error.value;
     }
 
@@ -58,19 +94,5 @@ async function handleRegisterFormSubmit (){
   }
 }
 
-const rules = {
-  name: [{ required: true, message: 'Username is required' }],
-  email: [{ required: true, type: 'email', message: 'Valid email is required' }],
-  password: [{ required: true, message: 'Password is required' }],
-  password_confirmation: [
-    { required: true, message: 'Please confirm' },
-    {
-      validator: (value, cb) => {
-        if (value !== form.password) cb('Passwords do not match')
-        else cb()
-      }
-    }
-  ]
-}
 </script>
 

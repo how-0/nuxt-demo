@@ -17,11 +17,16 @@
       <a-button><NuxtLink to="/register" icon>Register</NuxtLink></a-button>
       </a-space>
     </a-form-item>
+        <a-form-item v-if="errorMessage">
+      <a-alert type="error" :message="errorMessage" />
+    </a-form-item>
   </a-form>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+
+const errorMessage = ref('')
 
 const form = reactive({
   name: '',
@@ -30,6 +35,7 @@ const form = reactive({
 
 const { login } = useSanctumAuth()
 
+console.log(login);
 const onLogin = async () => {
   try {
     const userCredentials = {
@@ -48,7 +54,11 @@ const onLogin = async () => {
 
     navigateTo('/dashboard')
   } catch (err) {
-    console.error('Login failed', err?.data || err)
+    if (err?.response?.data?.errors) {
+      errorMessage.value = Object.values(err.response.data.errors)[0][0]
+    } else {
+      errorMessage.value = err?.response?.data?.message || 'Login failed'
+    }
   }
 }
 </script>

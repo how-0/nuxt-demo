@@ -1,11 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+definePageMeta({
+  middleware: 'guest',
+})
+</script>
 
 <template>
-  <div>
-    <h1>Welcome to the homepage</h1>
-  <FillableFormLogin>
-  </FillableFormLogin>
-  </div>
+  <h1>Welcome to the homepage</h1>
+  <FillableFormLogin />
 </template>
-
-<style scoped></style>

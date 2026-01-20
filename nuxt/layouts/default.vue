@@ -1,11 +1,22 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>
-    <AppHeader />
+  <div class = "layout-container">
+    <div class = "actions">
+    <LogoutButton />
+    </div>
     <slot />
-    <AppFooter />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.layout-container {
+  padding: 20px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end; 
+  margin-bottom: 20px; 
+}
+</style>

@@ -38,7 +38,6 @@ class AuthController extends Controller
         $remember = $request->boolean('remember') ?? false;
 
         if (Auth::attempt($request->only('name', 'password'), $remember)) {
-            $request->session()->regenerate();
             return response()->json([
                 'message' => 'Logged in successfully'
             ]);
@@ -47,5 +46,13 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Wrong password.',
         ], 401);
+    }
+
+    public function logout(Request $request){
+        Auth::guard('web')->logout();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
     }
 }
